@@ -1,0 +1,53 @@
+#!/usr/bin/python
+import re
+import subprocess
+import sys
+def parce1(out_file,pattern):
+		out_params=['Optimal','Failed','Unknown']
+		f1 = open(out_file, "r")
+		for line in f1.readlines():
+				param= re.findall(pattern, line)
+				if param:
+						line=line.strip()
+						list=line.split(" ")
+						if list[2] == out_params[0]:
+								print 0
+						elif list[2] == out_params[1]:
+								print 1
+						elif list[2] == out_params[2]:
+								print 2
+		f1.close()
+def parce3(out_file,pattern):
+		f1 = open(out_file, "r")
+		for line in f1.readlines():
+				line=line.strip()
+				param= re.findall(pattern, line)
+				if param:
+					list = re.findall('\d', line)
+					if len(list) > 0 :
+							list=''.join(list)
+							print(list)
+		f1.close()
+if 'adpbbucmd' in sys.argv:				
+			subprocess.Popen("/opt/MegaRAID/MegaCli/MegaCli adpbbucmd -a0 > out.txt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			out_file1="/etc/zabbix/externalscripts/out.txt"
+			parce1(out_file1,'Battery State')
+			parce3(out_file1,'Absolute State of charge')
+			parce3(out_file1,'Remaining Capacity')
+			parce3(out_file1,'FullCharge Capacity')
+elif 'adpallinfo' in sys.argv:
+		subprocess.Popen("/opt/MegaRAID/MegaCli/MegaCli adpallinfo -a0 > out.txt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		parce3(out_file1,'VirtualDrives')
+		parce3(out_file1,'Degraded')
+		parce3(out_file1,'Offline')
+		parce3(out_file1,'Physical Devices')
+		parce3(out_file1,'Disks')
+		parce3(out_file1,'Critical Disks')
+		parce3(out_file1,'Failed Disks')
+		parce3(out_file1,'Memory Correctable Errors')
+		parce3(out_file1,'Memory Uncorrectable Errors')
+else:
+print ("parameter didn't defined.Use only adpbbucmd or adpallinfo")
+
+				
+					

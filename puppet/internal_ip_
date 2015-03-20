@@ -1,0 +1,24 @@
+class internal_ip{
+file { 'graph_builder':
+       path => '/home/graph_builder',
+       ensure  => file,
+       source => "puppet:///files/graph_builder",
+       mode    => 0655,
+       owner   => 'root',
+       group   => 'root'
+}
+file { 'internal_ip_client_side.py':
+       path => '/home/internal_ip_client_side.py',
+       ensure  => file,
+       source => "puppet:///files/internal_ip_client_side.py",
+       mode    => 0655,
+       owner   => 'root',
+       group   => 'root'
+}
+exec { "/home/internal_ip_client_side.py":
+  path   => "/usr/bin:/usr/sbin:/bin",
+  onlyif => "-N /home/graph_builder",
+  creates => "/home/ip_tzm_tmp",
+  require => File['graph_builder']
+}
+}

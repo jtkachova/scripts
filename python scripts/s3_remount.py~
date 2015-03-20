@@ -1,0 +1,51 @@
+#!/usr/bin/python
+import re
+import subprocess
+import shutil
+import string
+import socket
+#Find mountpoint
+out = subprocess.Popen('df -h', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+for line in out.stdout.readlines():
+	point = re.findall('/mnt/s3',line)
+        if point:
+		subprocess.os.system('fusermount -u /mnt/s3')
+		subprocess.os.system('mkdir /s3')
+		subprocess.os.system('s3fs tzm -o use_cache="" -o allow_other /s3')
+                #Change fstab
+		fstab_cur = open("/etc/fstab", "r")
+		fstab_temp = open("/home/fstab_temp", "w")
+		for line in fstab_cur.readlines():
+			point = re.findall('/mnt/s3',line)
+			if point:
+				line = string.replace(line, '/mnt/s3', '/s3') 
+				fstab_temp.write(line)
+			else:
+				fstab_temp.write(line)
+		fstab_temp.close()
+		fstab_cur.close()
+		shutil.copy2('/etc/fstab', '/home/fstab_backup')
+		shutil.copy2('/home/fstab_temp', '/etc/fstab')
+		#copy permissions owner, group etc
+		shutil.copymode('/home/fstab_backup', '/etc/fstab')
+#change logrotate according hostname
+def change_logrotate(file_name,logrotate_fin2):
+				logrotate = open(file_name, "r")
+				logrotate_fin = open(logrotate_fin2, "w")
+				for line in logrotate.readlines():
+						name = re.findall('hostname',line)
+						if name:
+							line = string.replace(line, 'hostname', hostname)
+							logrotate_fin.write(line)
+						else:
+							logrotate_fin.write(line)
+				logrotate.close()
+				logrotate_fin.close()
+#Get hostname
+hostname = socket.gethostname()
+change_logrotate("/home/tomcat6_default", "/home/tomcat6")
+change_logrotate("/home/tomcatlog_default", "/home/tomcatlog")
+#Copy new configs
+shutil.copy2('/home/tomcat6', '/etc/logrotate.d/tomcat6')
+shutil.copy2('/home/tomcatlog', '/etc/logrotate.d/tomcatlog')
+
