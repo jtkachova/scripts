@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <title> Admin Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+<link href="static/login.css" rel="stylesheet"/>
+    <div class="container">
+    <div class="row">
+        <div class="col-md-offset-5 col-md-3">
+
+      <form action="" method="post" class="form-login">
+	<h1 align="center"> <img src="static/logo.png" height="56" width="197" align="middle"/></h1>
+        <input type="text" placeholder="Username" name="username" value="{{
+          request.form.username }}">
+         <input type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}">
+	<div class="wrapper">
+            <span class="group-btn"> 
+         <input class="btn btn-primary btn-md" type="submit" value="Login" >
+</span>
+            </div>
+      </form>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+      {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
+    </div>
+</div>
+</div>
+  </body>
+</html>
