@@ -1,6 +1,0 @@
----
-
-- name: Install pgpool
-  apt: pkg={{ item }} state=installed
-  with_items: packages
- 
